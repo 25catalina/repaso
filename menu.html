@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viajero Frecuente - Panel</title>
+</head>
+
+<body>
+
+  <h1>Hola, {{ usuario.nombre }}!</h1>
+
+  <a href="/crear_viaje">Crear Viaje</a>
+  <a href="/logout">Cerrar sesión</a>
+
+  <!-- Flash messages de categoría "viaje" -->
+  {% with messages = get_flashed_messages(category_filter=["viaje"]) %}
+  {% if messages %}
+  {% for m in messages %}
+  <div style="color: blue;">{{ m }}</div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>Destino</th>
+        <th>Organizador</th>
+        <th>Fecha de inicio</th>
+        <th>Fecha fin</th>
+        <th>Cupo</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for viaje in viajes %}
+      <tr>
+        <td>
+          {{ viaje.nombre }}
+          {% if viaje.esta_llena %}
+          <strong>(Llena)</strong>
+          {% endif %}
+        </td>
+        <td>{{ viaje.guia_nombre }} {{ viaje.guia_apellido }}</td>
+        <td>{{ viaje.fecha }}</td>
+        <td>{{ viaje.fecha_fin }}</td>
+        <td>{{ viaje.cupos_disponibles }}/{{ viaje.cupo }}</td>
+        <td>
+          <a href="/ver_viaje/{{ viaje.id }}">Ver</a>
+
+          {% if viaje.usuario_id == session['usuario_id'] %}
+          | <a href="/actualizar_viaje/{{ viaje.id }}">Editar</a>
+          | <form action="/eliminar_viaje/{{ viaje.id }}" method="POST" style="display:inline;">
+            <input type="submit" value="Borrar">
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</body>
+
+</html>
